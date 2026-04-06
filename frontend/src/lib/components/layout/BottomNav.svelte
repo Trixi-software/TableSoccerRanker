@@ -4,10 +4,10 @@
 	let currentPath = $derived($page.url.pathname);
 
 	const navItems = [
-		{ href: '/', label: 'Rankings', icon: '&#127942;' },
-		{ href: '/next-match', label: 'Play', icon: '&#9917;' },
-		{ href: '/matches', label: 'Matches', icon: '&#128203;' },
-		{ href: '/stats', label: 'Stats', icon: '&#128200;' }
+		{ href: '/', label: 'Rankings', icon: '\u{1F3C6}' },
+		{ href: '/next-match', label: 'Play', icon: '\u26BD' },
+		{ href: '/matches', label: 'Matches', icon: '\u{1F4CB}' },
+		{ href: '/stats', label: 'Stats', icon: '\u{1F4C8}' }
 	];
 </script>
 
@@ -19,7 +19,7 @@
 				class="flex flex-col items-center justify-center gap-0.5 min-w-[64px] py-1 transition-colors
 					{currentPath === item.href ? 'text-blue-600' : 'text-gray-500'}"
 			>
-				<span class="text-xl">{@html item.icon}</span>
+				<span class="text-xl">{item.icon}</span>
 				<span class="text-[10px] font-medium">{item.label}</span>
 			</a>
 		{/each}

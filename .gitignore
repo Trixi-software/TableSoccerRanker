@@ -44,3 +44,4 @@ test_*.py
 test_*.csv
 zapasy_*.txt
 zapasy_*.csv
+cookies.txt

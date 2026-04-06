@@ -31,16 +31,14 @@ public class TeamFormationService {
         List<PlayerRanking> allRankings = rankingService.getLongTermRankings();
 
         // Sort the 4 selected players by their ranking score (descending)
+        Map<UUID, Double> scoreById = new HashMap<>();
+        for (PlayerRanking r : allRankings) {
+            scoreById.put(r.userId(), r.score());
+        }
         List<UUID> sorted = playerIds.stream()
-            .sorted((a, b) -> {
-                double scoreA = allRankings.stream()
-                    .filter(r -> r.userId().equals(a)).findFirst()
-                    .map(PlayerRanking::score).orElse(0.0);
-                double scoreB = allRankings.stream()
-                    .filter(r -> r.userId().equals(b)).findFirst()
-                    .map(PlayerRanking::score).orElse(0.0);
-                return Double.compare(scoreB, scoreA);
-            })
+            .sorted((a, b) -> Double.compare(
+                scoreById.getOrDefault(b, 0.0),
+                scoreById.getOrDefault(a, 0.0)))
             .toList();
 
         // 1st + 4th (best + worst) = Yellow, 2nd + 3rd = White

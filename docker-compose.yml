@@ -26,8 +26,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-tablesoccer}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-tablesoccer}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-your-client-id}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-your-client-secret}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-not-configured}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-not-configured}
       FRONTEND_URL: http://localhost
       ALLOWED_DOMAIN: ${ALLOWED_DOMAIN:-trixi.cz}
     ports:

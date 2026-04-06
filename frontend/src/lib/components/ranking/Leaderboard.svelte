@@ -25,10 +25,10 @@
 					<td class="px-4 py-3">
 						<a href="/players/{player.userId}" class="flex items-center gap-3 hover:underline">
 							{#if player.avatarUrl}
-								<img src={player.avatarUrl} alt="" class="w-8 h-8 rounded-full" />
+								<img src={player.avatarUrl} alt={player.displayName} class="w-8 h-8 rounded-full" />
 							{:else}
 								<div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
-									{player.displayName[0]}
+									{player.displayName?.[0] ?? '?'}
 								</div>
 							{/if}
 							<span class="font-medium text-gray-900">{player.displayName}</span>
@@ -54,10 +54,10 @@
 					{player.rank}
 				</span>
 				{#if player.avatarUrl}
-					<img src={player.avatarUrl} alt="" class="w-10 h-10 rounded-full" />
+					<img src={player.avatarUrl} alt={player.displayName} class="w-10 h-10 rounded-full" />
 				{:else}
 					<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-bold text-gray-600">
-						{player.displayName[0]}
+						{player.displayName?.[0] ?? '?'}
 					</div>
 				{/if}
 				<div class="flex-1 min-w-0">

@@ -80,8 +80,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setDisplayName(request.displayName());
         user.setEmail(email);
-        // First user gets ADMIN role
-        user.setRole(userRepository.count() == 0 ? Role.ADMIN : Role.PLAYER);
+        // First user gets ADMIN role (countByRole is safer against race conditions than count)
+        user.setRole(userRepository.countByRole(Role.ADMIN) == 0 ? Role.ADMIN : Role.PLAYER);
         return UserDto.from(userRepository.save(user));
     }
 

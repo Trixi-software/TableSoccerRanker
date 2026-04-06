@@ -8,14 +8,19 @@
 	let recalculating = $state(false);
 	let importResult: { imported: number; skipped: number; errors: string[] } | null = $state(null);
 	let importing = $state(false);
+	let loadError: string | null = $state(null);
 
 	onMount(async () => {
-		const [s, u] = await Promise.all([
-			api.get<Record<string, string>>('/api/admin/settings'),
-			api.get<User[]>('/api/users')
-		]);
-		settings = s;
-		users = u;
+		try {
+			const [s, u] = await Promise.all([
+				api.get<Record<string, string>>('/api/admin/settings'),
+				api.get<User[]>('/api/users')
+			]);
+			settings = s;
+			users = u;
+		} catch (e) {
+			loadError = 'Failed to load admin settings.';
+		}
 	});
 
 	async function updateLongTermAlgorithm(algorithm: string) {
@@ -58,6 +63,10 @@
 
 <div class="space-y-6">
 	<h1 class="text-2xl font-bold text-gray-900">Admin Panel</h1>
+
+	{#if loadError}
+		<div class="bg-red-50 text-red-700 rounded-lg p-4 text-sm">{loadError}</div>
+	{/if}
 
 	<!-- Algorithm Settings -->
 	<div class="bg-white rounded-xl shadow-sm p-4">
@@ -153,10 +162,10 @@
 				<div class="flex items-center justify-between py-3">
 					<div class="flex items-center gap-3">
 						{#if user.avatarUrl}
-							<img src={user.avatarUrl} alt="" class="w-8 h-8 rounded-full" />
+							<img src={user.avatarUrl} alt={user.displayName} class="w-8 h-8 rounded-full" />
 						{:else}
 							<div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">
-								{user.displayName[0]}
+								{user.displayName?.[0] ?? '?'}
 							</div>
 						{/if}
 						<div>

@@ -163,14 +163,21 @@
 		filterMaxProb = '';
 	}
 
+	let loadError: string | null = $state(null);
+
 	onMount(async () => {
-		const [matchData, userData] = await Promise.all([
-			api.get<Page<Match>>('/api/matches?size=10000'),
-			api.get<User[]>('/api/users')
-		]);
-		allMatches = matchData.content;
-		users = userData;
-		loading = false;
+		try {
+			const [matchData, userData] = await Promise.all([
+				api.get<Page<Match>>('/api/matches?size=5000'),
+				api.get<User[]>('/api/users')
+			]);
+			allMatches = matchData.content;
+			users = userData;
+		} catch (e) {
+			loadError = 'Failed to load matches. Please try again.';
+		} finally {
+			loading = false;
+		}
 	});
 </script>
 
@@ -184,6 +191,8 @@
 
 	{#if loading}
 		<div class="text-center py-12 text-gray-400">Loading...</div>
+	{:else if loadError}
+		<div class="bg-red-50 text-red-700 rounded-lg p-4 text-sm">{loadError}</div>
 	{:else}
 		<!-- Filter/Sort bar -->
 		<div class="bg-white rounded-xl shadow-sm p-3 space-y-3">

@@ -14,7 +14,11 @@ public final class AvgGoalDiffRankingStrategy implements LongTermRankingStrategy
     @Override
     public List<PlayerRanking> calculateRankings(List<User> players, List<Match> matches) {
         Map<UUID, List<Integer>> goalDiffs = new HashMap<>();
-        players.forEach(p -> goalDiffs.put(p.getId(), new ArrayList<>()));
+        Map<UUID, User> playersById = new HashMap<>();
+        players.forEach(p -> {
+            goalDiffs.put(p.getId(), new ArrayList<>());
+            playersById.put(p.getId(), p);
+        });
 
         for (Match match : matches) {
             for (MatchPlayer mp : match.getPlayers()) {
@@ -30,9 +34,7 @@ public final class AvgGoalDiffRankingStrategy implements LongTermRankingStrategy
             .map(entry -> {
                 double avg = entry.getValue().isEmpty() ? 0 :
                     entry.getValue().stream().mapToInt(Integer::intValue).average().orElse(0);
-                User user = players.stream()
-                    .filter(p -> p.getId().equals(entry.getKey()))
-                    .findFirst().orElseThrow();
+                User user = playersById.get(entry.getKey());
                 return new PlayerRanking(0, user.getId(), user.getDisplayName(), user.getAvatarUrl(), avg);
             })
             .sorted(Comparator.comparingDouble(PlayerRanking::score).reversed())

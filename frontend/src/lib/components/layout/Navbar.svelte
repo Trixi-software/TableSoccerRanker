@@ -64,10 +64,10 @@
 							class="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 cursor-pointer"
 						>
 							{#if user.avatarUrl}
-								<img src={user.avatarUrl} alt="" class="w-8 h-8 rounded-full" />
+								<img src={user.avatarUrl} alt={user.displayName} class="w-8 h-8 rounded-full" />
 							{:else}
 								<div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">
-									{user.displayName[0]}
+									{user.displayName?.[0] ?? '?'}
 								</div>
 							{/if}
 							<span class="hidden lg:inline">{user.displayName}</span>

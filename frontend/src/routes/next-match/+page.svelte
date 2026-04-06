@@ -88,7 +88,10 @@
 			const wp = preview.players.find(p => p.teamColor === 'WHITE');
 			yellowProb = yp?.winProbability ?? null;
 			whiteProb = wp?.winProbability ?? null;
-		} catch { /* ignore */ }
+		} catch (e) {
+			yellowProb = null;
+			whiteProb = null;
+		}
 	}
 
 	function startScoring() {
@@ -117,7 +120,9 @@
 				yellowScore,
 				whiteScore
 			});
-		} catch { /* ignore */ }
+		} catch (e) {
+			previewData = null;
+		}
 		previewLoading = false;
 	}
 
@@ -192,10 +197,10 @@
 						disabled={selectedIds.length >= 4 && !selectedIds.includes(user.id)}
 					>
 						{#if user.avatarUrl}
-							<img src={user.avatarUrl} alt="" class="w-10 h-10 rounded-full" />
+							<img src={user.avatarUrl} alt={user.displayName} class="w-10 h-10 rounded-full" />
 						{:else}
 							<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-bold">
-								{user.displayName[0]}
+								{user.displayName?.[0] ?? '?'}
 							</div>
 						{/if}
 						<div class="min-w-0">

@@ -57,8 +57,16 @@ public class ExcelImportService {
                     String yellowDef = getCellString(row.getCell(2));
                     String whiteAtt = getCellString(row.getCell(3));
                     String whiteDef = getCellString(row.getCell(4));
-                    int yellowScore = (int) row.getCell(5).getNumericCellValue();
-                    int whiteScore = (int) row.getCell(6).getNumericCellValue();
+                    Cell yellowScoreCell = row.getCell(5);
+                    Cell whiteScoreCell = row.getCell(6);
+                    if (yellowScoreCell == null || whiteScoreCell == null) {
+                        throw new IllegalArgumentException("Score cells are missing");
+                    }
+                    int yellowScore = (int) yellowScoreCell.getNumericCellValue();
+                    int whiteScore = (int) whiteScoreCell.getNumericCellValue();
+                    if (yellowScore < 0 || whiteScore < 0) {
+                        throw new IllegalArgumentException("Scores must be non-negative");
+                    }
 
                     saveMatch(yellowAtt, yellowDef, whiteAtt, whiteDef, yellowScore, whiteScore, playedAt);
                     imported++;
@@ -175,7 +183,7 @@ public class ExcelImportService {
     }
 
     private Instant parseExcelDate(Cell cell) {
-        if (cell == null) return Instant.now();
+        if (cell == null) throw new IllegalArgumentException("Date cell is missing");
         if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
             return cell.getDateCellValue().toInstant();
         }

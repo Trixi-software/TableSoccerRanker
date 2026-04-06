@@ -30,7 +30,11 @@ public final class EloRankingStrategy implements LongTermRankingStrategy {
     @Override
     public List<PlayerRanking> calculateRankings(List<User> players, List<Match> matches) {
         Map<UUID, Integer> ratings = new HashMap<>();
-        players.forEach(p -> ratings.put(p.getId(), DEFAULT_ELO));
+        Map<UUID, User> playersById = new HashMap<>();
+        players.forEach(p -> {
+            ratings.put(p.getId(), DEFAULT_ELO);
+            playersById.put(p.getId(), p);
+        });
 
         for (Match match : matches) {
             applyMatch(match, ratings);
@@ -40,9 +44,7 @@ public final class EloRankingStrategy implements LongTermRankingStrategy {
         return ratings.entrySet().stream()
             .sorted(Map.Entry.<UUID, Integer>comparingByValue().reversed())
             .map(entry -> {
-                User user = players.stream()
-                    .filter(p -> p.getId().equals(entry.getKey()))
-                    .findFirst().orElseThrow();
+                User user = playersById.get(entry.getKey());
                 return new PlayerRanking(
                     rank.getAndIncrement(),
                     user.getId(),
@@ -99,7 +101,7 @@ public final class EloRankingStrategy implements LongTermRankingStrategy {
 
             TeamColor winner = match.winnerColor();
             double s = calculateScore(match.scoreFor(color), match.scoreAgainst(color),
-                winner == color, winner == null);
+                winner == color);
             double pPos = expectedProbability(myPosTeamElo, oppPosTeamElo);
 
             if (mp.getPlayerRole() == PlayerRole.ATTACKER) {
@@ -145,7 +147,7 @@ public final class EloRankingStrategy implements LongTermRankingStrategy {
 
         for (MatchPlayer mp : yellowPlayers) {
             double s = calculateScore(match.getYellowScore(), match.getWhiteScore(),
-                winner == TeamColor.YELLOW, winner == null);
+                winner == TeamColor.YELLOW);
             double p = expectedProbability(yellowTeamElo, whiteTeamElo);
             int oldElo = ratings.getOrDefault(mp.getUser().getId(), DEFAULT_ELO);
             int newElo = (int) Math.round(oldElo + K * (s - p));
@@ -160,7 +162,7 @@ public final class EloRankingStrategy implements LongTermRankingStrategy {
 
         for (MatchPlayer mp : whitePlayers) {
             double s = calculateScore(match.getWhiteScore(), match.getYellowScore(),
-                winner == TeamColor.WHITE, winner == null);
+                winner == TeamColor.WHITE);
             double p = expectedProbability(whiteTeamElo, yellowTeamElo);
             int oldElo = ratings.getOrDefault(mp.getUser().getId(), DEFAULT_ELO);
             int newElo = (int) Math.round(oldElo + K * (s - p));
@@ -174,7 +176,7 @@ public final class EloRankingStrategy implements LongTermRankingStrategy {
         }
     }
 
-    private double calculateScore(int goalsScored, int goalsConceded, boolean isWinner, boolean isDraw) {
+    private double calculateScore(int goalsScored, int goalsConceded, boolean isWinner) {
         double winBonus = isWinner ? WIN_BONUS : 0;
         return S_BASE + winBonus + (double) (goalsScored - goalsConceded) / GOAL_RATIO_DIVISOR;
     }

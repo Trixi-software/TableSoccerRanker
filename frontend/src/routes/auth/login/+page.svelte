@@ -35,8 +35,8 @@
 			goto('/');
 		} catch (e) {
 			const msg = (e as Error).message || '';
-			if (msg.includes('already exists') || msg.includes('already')) {
-				formError = "User with username '" + username + "' already exists.";
+			if (msg.includes('already exists')) {
+				formError = 'Username is already taken. Please choose a different one.';
 			} else {
 				formError = 'Registration failed. Please try a different username.';
 			}

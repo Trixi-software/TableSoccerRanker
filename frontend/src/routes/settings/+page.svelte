@@ -50,10 +50,10 @@
 			<h2 class="font-semibold text-gray-900 mb-4">Profile</h2>
 			<div class="flex items-center gap-4">
 				{#if user.avatarUrl}
-					<img src={user.avatarUrl} alt="" class="w-16 h-16 rounded-full" />
+					<img src={user.avatarUrl} alt={user.displayName} class="w-16 h-16 rounded-full" />
 				{:else}
 					<div class="w-16 h-16 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-2xl font-bold">
-						{user.displayName[0]}
+						{user.displayName?.[0] ?? '?'}
 					</div>
 				{/if}
 				<div>

@@ -91,8 +91,8 @@ public class RankingService {
             p.setEloRating(1000);
             p.setAttackerElo(1000);
             p.setDefenderElo(1000);
-            userRepository.save(p);
         });
+        userRepository.saveAll(players);
 
         // Replay all matches — create daily snapshots after each match
         var strategy = strategyFactory.getActiveLongTermStrategy();
@@ -134,7 +134,6 @@ public class RankingService {
         var existing = eloSnapshotRepository.findByUserIdAndSnapshotDate(user.getId(), date);
         if (existing.isPresent()) {
             existing.get().setEloRating(user.getEloRating());
-            eloSnapshotRepository.save(existing.get());
         } else {
             eloSnapshotRepository.save(new EloSnapshot(user, user.getEloRating(), date));
         }

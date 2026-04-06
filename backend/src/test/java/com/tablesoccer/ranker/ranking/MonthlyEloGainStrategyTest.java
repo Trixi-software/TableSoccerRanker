@@ -19,7 +19,7 @@ class MonthlyEloGainStrategyTest {
 
     @BeforeEach
     void setUp() {
-        strategy = new MonthlyEloGainStrategy(null); // no longer uses snapshots
+        strategy = new MonthlyEloGainStrategy();
         alice = TestDataFactory.createUser("Alice", 1250);
         bob = TestDataFactory.createUser("Bob", 1220);
         charlie = TestDataFactory.createUser("Charlie", 1180);

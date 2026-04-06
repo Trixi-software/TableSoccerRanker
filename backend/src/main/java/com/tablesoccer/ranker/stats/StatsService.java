@@ -271,8 +271,11 @@ public class StatsService {
         int total = playerMatches.size();
         double winRate = total > 0 ? (double) wins / total * 100 : 0;
 
-        // Find best/worst partner
-        Map<UUID, User> usersById = userRepository.findAll().stream()
+        // Find best/worst partner — only load users we actually need
+        Set<UUID> relevantUserIds = new HashSet<>();
+        partnerRecord.keySet().forEach(relevantUserIds::add);
+        opponentRecord.keySet().forEach(relevantUserIds::add);
+        Map<UUID, User> usersById = userRepository.findAllById(relevantUserIds).stream()
             .collect(Collectors.toMap(User::getId, u -> u));
 
         var bestPartner = findBestPartner(partnerRecord, usersById, true);
@@ -322,9 +325,8 @@ public class StatsService {
         int streakCount = currentWinStreak > 0 ? currentWinStreak : currentLoseStreak;
         var currentStreakInfo = new PlayerStats.StreakInfo(streakType, streakCount);
 
-        // Zlatý Bludišťák wins for this player
-        List<Match> allMatchesForBludistak = matchRepository.findAllByOrderByPlayedAtAsc();
-        var bludistakData = computeBludistakWinners(allMatchesForBludistak);
+        // Zlatý Bludišťák wins for this player — reuse player's matches
+        var bludistakData = computeBludistakWinners(playerMatches);
         int bludistakWins = bludistakData.winsPerPlayer().getOrDefault(userId, 0);
 
         return new PlayerStats(

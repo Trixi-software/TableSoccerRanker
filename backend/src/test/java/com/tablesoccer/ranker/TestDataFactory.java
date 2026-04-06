@@ -23,6 +23,8 @@ public class TestDataFactory {
         user.setUsername(name.toLowerCase().replace(" ", "_"));
         user.setRole(Role.PLAYER);
         user.setEloRating(eloRating);
+        user.setAttackerElo(eloRating);
+        user.setDefenderElo(eloRating);
         return user;
     }
 

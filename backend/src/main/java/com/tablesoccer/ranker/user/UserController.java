@@ -47,7 +47,12 @@ public class UserController {
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
 
-        // Create session
+        // Invalidate existing session to prevent session fixation
+        var existingSession = httpRequest.getSession(false);
+        if (existingSession != null) {
+            existingSession.invalidate();
+        }
+        // Create new session
         var session = httpRequest.getSession(true);
         session.setAttribute("SPRING_SECURITY_CONTEXT", context);
 

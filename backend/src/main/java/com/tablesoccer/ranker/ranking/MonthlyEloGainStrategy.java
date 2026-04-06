@@ -12,12 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public final class MonthlyEloGainStrategy implements MonthlyRankingStrategy {
 
-    private final EloSnapshotRepository eloSnapshotRepository;
-
-    public MonthlyEloGainStrategy(EloSnapshotRepository eloSnapshotRepository) {
-        this.eloSnapshotRepository = eloSnapshotRepository;
-    }
-
     @Override
     public List<PlayerRanking> calculateRankings(List<User> players, List<Match> matches, YearMonth month) {
         // Sum ELO changes from all matches in the month per player

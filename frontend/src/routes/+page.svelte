@@ -12,6 +12,8 @@
 	let recentMatches: Match[] = $state([]);
 	let companyStats: CompanyStats | null = $state(null);
 	let activeTab: 'longterm' | 'monthly' | 'timeline' = $state('longterm');
+	let loading = $state(true);
+	let error: string | null = $state(null);
 
 	// Monthly picker
 	const now = new Date();
@@ -44,21 +46,33 @@
 	}
 
 	onMount(async () => {
-		const [lt, monthly, matches, stats] = await Promise.all([
-			api.get<PlayerRanking[]>('/api/rankings/long-term'),
-			api.get<PlayerRanking[]>('/api/rankings/monthly'),
-			api.get<Page<Match>>('/api/matches?size=5'),
-			api.get<CompanyStats>('/api/stats/company')
-		]);
-		longTermRankings = lt;
-		monthlyRankings = monthly;
-		recentMatches = matches.content;
-		companyStats = stats;
+		try {
+			const [lt, monthly, matches, stats] = await Promise.all([
+				api.get<PlayerRanking[]>('/api/rankings/long-term'),
+				api.get<PlayerRanking[]>('/api/rankings/monthly'),
+				api.get<Page<Match>>('/api/matches?size=5'),
+				api.get<CompanyStats>('/api/stats/company')
+			]);
+			longTermRankings = lt;
+			monthlyRankings = monthly;
+			recentMatches = matches.content;
+			companyStats = stats;
+		} catch (e) {
+			error = 'Failed to load rankings. Please try again.';
+		} finally {
+			loading = false;
+		}
 	});
 </script>
 
 <div class="space-y-6">
 	<h1 class="text-2xl font-bold text-gray-900">Rankings</h1>
+
+	{#if loading}
+		<div class="text-center py-12 text-gray-400">Loading...</div>
+	{:else if error}
+		<div class="bg-red-50 text-red-700 rounded-lg p-4 text-sm">{error}</div>
+	{:else}
 
 	<!-- Zlatý Bludišťák Banner -->
 	{#if companyStats?.currentBludistak}
@@ -168,5 +182,6 @@
 				{/each}
 			</div>
 		</div>
+	{/if}
 	{/if}
 </div>

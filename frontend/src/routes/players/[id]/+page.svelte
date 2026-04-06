@@ -9,6 +9,7 @@
 	let player: User | null = $state(null);
 	let stats: PlayerStats | null = $state(null);
 	let allDataPoints: EloDataPoint[] = $state([]);
+	let loadError: string | null = $state(null);
 
 	// Chart state
 	type Period = '30d' | '90d' | '365d' | 'all';
@@ -101,19 +102,25 @@
 	let hoverIdx: number | null = $state(null);
 
 	onMount(async () => {
-		const [p, s, timelines] = await Promise.all([
-			api.get<User>(`/api/users/${playerId}`),
-			api.get<PlayerStats>(`/api/stats/player/${playerId}`),
-			api.get<PlayerEloTimeline[]>('/api/rankings/elo-timeline')
-		]);
-		player = p;
-		stats = s;
-		const tl = timelines.find(t => t.userId === playerId);
-		allDataPoints = tl?.dataPoints ?? [];
+		try {
+			const [p, s, timelines] = await Promise.all([
+				api.get<User>(`/api/users/${playerId}`),
+				api.get<PlayerStats>(`/api/stats/player/${playerId}`),
+				api.get<PlayerEloTimeline[]>('/api/rankings/elo-timeline')
+			]);
+			player = p;
+			stats = s;
+			const tl = timelines.find(t => t.userId === playerId);
+			allDataPoints = tl?.dataPoints ?? [];
+		} catch (e) {
+			loadError = 'Failed to load player profile. Please try again.';
+		}
 	});
 </script>
 
-{#if !stats || !player}
+{#if loadError}
+	<div class="bg-red-50 text-red-700 rounded-lg p-4 text-sm">{loadError}</div>
+{:else if !stats || !player}
 	<div class="text-center py-12 text-gray-400">Loading...</div>
 {:else}
 	<div class="space-y-6">
@@ -121,10 +128,10 @@
 		<div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
 			<div class="flex items-center gap-3 sm:gap-4">
 				{#if player.avatarUrl}
-					<img src={player.avatarUrl} alt="" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full shrink-0" />
+					<img src={player.avatarUrl} alt={player.displayName} class="w-12 h-12 sm:w-16 sm:h-16 rounded-full shrink-0" />
 				{:else}
 					<div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl sm:text-2xl font-bold text-gray-500 shrink-0">
-						{player.displayName[0]}
+						{player.displayName?.[0] ?? '?'}
 					</div>
 				{/if}
 				<div class="flex-1 min-w-0">

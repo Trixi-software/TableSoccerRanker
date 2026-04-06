@@ -55,8 +55,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                 user.setEmail(email);
                 user.setDisplayName(name);
                 user.setAvatarUrl(picture);
-                // First user gets ADMIN role
-                user.setRole(userRepository.count() == 0 ? Role.ADMIN : Role.PLAYER);
+                // First user gets ADMIN role (countByRole is safer against race conditions)
+                user.setRole(userRepository.countByRole(Role.ADMIN) == 0 ? Role.ADMIN : Role.PLAYER);
                 userRepository.save(user);
             }
         );

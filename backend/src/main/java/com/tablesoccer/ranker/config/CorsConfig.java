@@ -20,7 +20,7 @@ public class CorsConfig {
         var config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(frontendUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(List.of("Content-Type", "Authorization", "X-XSRF-TOKEN", "X-Requested-With"));
         config.setAllowCredentials(true);
 
         var source = new UrlBasedCorsConfigurationSource();
