@@ -11,7 +11,7 @@
 	let monthlyRankings: PlayerRanking[] = $state([]);
 	let recentMatches: Match[] = $state([]);
 	let companyStats: CompanyStats | null = $state(null);
-	let activeTab: 'longterm' | 'monthly' | 'timeline' = $state('longterm');
+	let activeTab: 'longterm' | 'monthly' | 'timeline' = $state('monthly');
 	let loading = $state(true);
 	let error: string | null = $state(null);
 

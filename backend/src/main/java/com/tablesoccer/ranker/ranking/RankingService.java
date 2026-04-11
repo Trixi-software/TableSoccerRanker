@@ -50,7 +50,7 @@ public class RankingService {
         var players = userRepository.findByActiveTrue();
         Instant from = month.atDay(1).atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant to = month.plusMonths(1).atDay(1).atStartOfDay(ZoneOffset.UTC).toInstant();
-        var matches = matchRepository.findByPlayedAtBetweenOrderByPlayedAtAsc(from, to);
+        var matches = matchRepository.findByPlayedAtInRange(from, to);
         return strategy.calculateRankings(players, matches, month);
     }
 

@@ -22,7 +22,10 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
 
     List<Match> findByPlayedAtBetweenOrderByPlayedAtAsc(Instant from, Instant to);
 
+    @Query("SELECT m FROM Match m WHERE m.playedAt >= :from AND m.playedAt < :to ORDER BY m.playedAt ASC")
+    List<Match> findByPlayedAtInRange(Instant from, Instant to);
+
     @Query("SELECT m FROM Match m JOIN m.players mp WHERE mp.user.id = :userId " +
-           "AND m.playedAt BETWEEN :from AND :to ORDER BY m.playedAt ASC")
+           "AND m.playedAt >= :from AND m.playedAt < :to ORDER BY m.playedAt ASC")
     List<Match> findByPlayerIdAndPeriod(UUID userId, Instant from, Instant to);
 }

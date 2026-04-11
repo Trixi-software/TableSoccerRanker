@@ -43,4 +43,4 @@ server:
 logging:
   level:
     com.tablesoccer: INFO
-    org.springframework.security: WARN
+    org.springframework.security: INFO

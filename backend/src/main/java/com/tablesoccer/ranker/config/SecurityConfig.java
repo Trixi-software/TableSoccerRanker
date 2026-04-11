@@ -32,6 +32,12 @@ public class SecurityConfig {
     @Value("${app.frontend-url:http://localhost:5173}")
     private String frontendUrl;
 
+    private final OAuth2UserService oAuth2UserService;
+
+    public SecurityConfig(OAuth2UserService oAuth2UserService) {
+        this.oAuth2UserService = oAuth2UserService;
+    }
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -44,6 +50,8 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        var defaultOidcUserService = new org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService();
+
         return http
             .cors(cors -> {})
             .csrf(csrf -> csrf
@@ -68,6 +76,15 @@ public class SecurityConfig {
             .oauth2Login(oauth -> oauth
                 .defaultSuccessUrl(frontendUrl, true)
                 .failureUrl(frontendUrl + "/auth/login?error=true")
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(oAuth2UserService)
+                    .oidcUserService(request -> {
+                        var oidcUser = defaultOidcUserService.loadUser(request);
+                        var authorities = oAuth2UserService.syncUser(oidcUser);
+                        return new org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser(
+                            authorities, oidcUser.getIdToken(), oidcUser.getUserInfo());
+                    })
+                )
             )
             .logout(logout -> logout
                 .logoutUrl("/api/auth/logout")
