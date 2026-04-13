@@ -42,11 +42,6 @@ server:
   forward-headers-strategy: native
   tomcat:
     redirect-context-root: false
-  remoteip:
-      remote-ip-header: x-forwarded-for
-      protocol-header: x-forwarded-proto
-      host-header: x-forwarded-host
-      port-header: x-forwarded-port
 
 logging:
   level:
