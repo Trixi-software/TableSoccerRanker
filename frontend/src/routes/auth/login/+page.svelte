@@ -4,6 +4,7 @@
 	import { api } from '$lib/api/client';
 
 	let error = $derived($page.url.searchParams.get('error'));
+	let passwordAuthEnabled = $derived($page.data.passwordAuthEnabled);
 	let mode: 'login' | 'register' = $state('login');
 	let username = $state('');
 	let password = $state('');
@@ -71,56 +72,58 @@
 			</div>
 		{/if}
 
-		<!-- Username/Password form -->
-		<form onsubmit={(e) => { e.preventDefault(); mode === 'login' ? handleLogin() : handleRegister(); }}>
-			<div class="space-y-3">
-				<input
-					type="text"
-					bind:value={username}
-					placeholder="Username"
-					required
-					class="w-full px-4 py-3 border border-brand-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-shadow"
-				/>
-				{#if mode === 'register'}
+		{#if passwordAuthEnabled}
+			<!-- Username/Password form -->
+			<form onsubmit={(e) => { e.preventDefault(); mode === 'login' ? handleLogin() : handleRegister(); }}>
+				<div class="space-y-3">
 					<input
 						type="text"
-						bind:value={displayName}
-						placeholder="Display Name"
+						bind:value={username}
+						placeholder="Username"
 						required
 						class="w-full px-4 py-3 border border-brand-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-shadow"
 					/>
-				{/if}
-				<input
-					type="password"
-					bind:value={password}
-					placeholder="Password"
-					required
-					minlength={mode === 'register' ? 6 : undefined}
-					class="w-full px-4 py-3 border border-brand-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-shadow"
-				/>
-				<button
-					type="submit"
-					disabled={loading}
-					class="w-full py-3 bg-brand-blue text-white rounded-xl font-bold hover:bg-brand-blue/90 disabled:bg-brand-gray transition-colors"
-				>
-					{loading ? '...' : mode === 'login' ? 'Sign In' : 'Create Account'}
-				</button>
+					{#if mode === 'register'}
+						<input
+							type="text"
+							bind:value={displayName}
+							placeholder="Display Name"
+							required
+							class="w-full px-4 py-3 border border-brand-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-shadow"
+						/>
+					{/if}
+					<input
+						type="password"
+						bind:value={password}
+						placeholder="Password"
+						required
+						minlength={mode === 'register' ? 6 : undefined}
+						class="w-full px-4 py-3 border border-brand-gray rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-shadow"
+					/>
+					<button
+						type="submit"
+						disabled={loading}
+						class="w-full py-3 bg-brand-blue text-white rounded-xl font-bold hover:bg-brand-blue/90 disabled:bg-brand-gray transition-colors"
+					>
+						{loading ? '...' : mode === 'login' ? 'Sign In' : 'Create Account'}
+					</button>
+				</div>
+			</form>
+
+			<button
+				onclick={() => { mode = mode === 'login' ? 'register' : 'login'; formError = null; }}
+				class="w-full text-center text-sm text-brand-blue hover:text-brand-it-blue font-semibold mt-3 transition-colors"
+			>
+				{mode === 'login' ? "Don't have an account? Register" : 'Already have an account? Sign In'}
+			</button>
+
+			<!-- Divider -->
+			<div class="flex items-center gap-3 my-5">
+				<div class="flex-1 h-px bg-brand-gray"></div>
+				<span class="text-xs text-gray-400 font-semibold">OR</span>
+				<div class="flex-1 h-px bg-brand-gray"></div>
 			</div>
-		</form>
-
-		<button
-			onclick={() => { mode = mode === 'login' ? 'register' : 'login'; formError = null; }}
-			class="w-full text-center text-sm text-brand-blue hover:text-brand-it-blue font-semibold mt-3 transition-colors"
-		>
-			{mode === 'login' ? "Don't have an account? Register" : 'Already have an account? Sign In'}
-		</button>
-
-		<!-- Divider -->
-		<div class="flex items-center gap-3 my-5">
-			<div class="flex-1 h-px bg-brand-gray"></div>
-			<span class="text-xs text-gray-400 font-semibold">OR</span>
-			<div class="flex-1 h-px bg-brand-gray"></div>
-		</div>
+		{/if}
 
 		<!-- Google OAuth -->
 		<a

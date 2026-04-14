@@ -3,6 +3,7 @@
 	import { api } from '$lib/api/client';
 
 	let user = $derived($page.data.user);
+	let passwordAuthEnabled = $derived($page.data.passwordAuthEnabled);
 
 	let currentPassword = $state('');
 	let newPassword = $state('');
@@ -67,6 +68,7 @@
 			</div>
 		</div>
 
+		{#if passwordAuthEnabled}
 		<!-- Change password -->
 		<div class="bg-white rounded-2xl border border-brand-cloud-blue p-6 animate-fade-in-up" style="--delay: 80ms">
 			<h2 class="font-bold text-gray-900 mb-4">Change Password</h2>
@@ -127,5 +129,6 @@
 				</div>
 			</form>
 		</div>
+		{/if}
 	</div>
 {/if}

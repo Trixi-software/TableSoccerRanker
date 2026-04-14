@@ -31,6 +31,7 @@ spring:
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:5173}
   allowed-domain: ${ALLOWED_DOMAIN:trixi.cz}
+  password-auth-enabled: ${PASSWORD_AUTH_ENABLED:false}
 
   servlet:
     multipart:

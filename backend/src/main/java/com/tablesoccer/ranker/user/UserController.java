@@ -1,6 +1,7 @@
 package com.tablesoccer.ranker.user;
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -18,10 +20,18 @@ public class UserController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final boolean passwordAuthEnabled;
 
-    public UserController(UserService userService, AuthenticationManager authenticationManager) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager,
+                          @Value("${app.password-auth-enabled:false}") boolean passwordAuthEnabled) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.passwordAuthEnabled = passwordAuthEnabled;
+    }
+
+    @GetMapping("/auth/config")
+    public Map<String, Boolean> authConfig() {
+        return Map.of("passwordAuthEnabled", passwordAuthEnabled);
     }
 
     @GetMapping("/auth/me")
@@ -36,11 +46,13 @@ public class UserController {
     @PostMapping("/auth/register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto register(@Valid @RequestBody RegisterRequest request) {
+        requirePasswordAuth();
         return userService.register(request);
     }
 
     @PostMapping("/auth/login")
     public UserDto login(@Valid @RequestBody LoginRequest request, jakarta.servlet.http.HttpServletRequest httpRequest) {
+        requirePasswordAuth();
         var authToken = new UsernamePasswordAuthenticationToken(request.username(), request.password());
         var authentication = authenticationManager.authenticate(authToken);
         var context = SecurityContextHolder.createEmptyContext();
@@ -62,7 +74,14 @@ public class UserController {
     @PutMapping("/auth/password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void changePassword(@Valid @RequestBody ChangePasswordRequest request, Principal principal) {
+        requirePasswordAuth();
         userService.changePassword(principal, request);
+    }
+
+    private void requirePasswordAuth() {
+        if (!passwordAuthEnabled) {
+            throw new IllegalStateException("Password authentication is disabled");
+        }
     }
 
     @GetMapping("/users")
