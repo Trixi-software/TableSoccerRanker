@@ -34,14 +34,14 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql")
 
     // Excel import
-    implementation("org.apache.poi:poi-ooxml:5.3.0")
+    implementation("org.apache.poi:poi-ooxml:5.5.1")
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.testcontainers:junit-jupiter:1.21.1")
-    testImplementation("org.testcontainers:postgresql:1.21.1")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.4")
+    testImplementation("org.testcontainers:postgresql:1.21.4")
     // Force docker-java upgrade for Docker Desktop 4.61+ compatibility
     testImplementation("com.github.docker-java:docker-java-api:3.7.1")
     testImplementation("com.github.docker-java:docker-java-transport-zerodep:3.7.1")
