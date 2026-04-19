@@ -1,22 +1,23 @@
-name: SonarQube Frontend
+name: SonarQube Docker
 on:
   push:
     branches:
       - main
     paths:
-      - 'frontend/**'
+      - '**/Dockerfile'
+      - 'docker-compose*.yml'
+      - '.dockerignore'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - 'frontend/**'
+      - '**/Dockerfile'
+      - 'docker-compose*.yml'
+      - '.dockerignore'
   workflow_dispatch:
 jobs:
   sonarqube:
     name: SonarQube
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,3 +26,8 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=tablesoccer-docker
+            -Dsonar.projectName=TableSoccerRanker-Docker
+            -Dsonar.sources=backend/Dockerfile,frontend/Dockerfile,docker-compose.yml

@@ -1,4 +1,4 @@
-name: SonarQube
+name: SonarQube Backend
 on:
   push:
     paths:
@@ -9,6 +9,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - 'backend/**'
+  workflow_dispatch:
 jobs:
   build:
     name: Build and analyze
@@ -40,9 +41,6 @@ jobs:
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-
-      - name: Build + Sonar
-        run: ./gradlew build sonar --info
 
       - name: Build and analyze
         env:
